@@ -15,15 +15,15 @@ p1 = 90
 p2 = 30
 minR = 30
 maxR = 150
-loop = 0
+fname = ''
 
 ## TESTING PARAMETERS ##
-cv2.namedWindow('hough')
-cv2.createTrackbar('minD', 'hough', 1, 100, nothing)
-cv2.createTrackbar('p1', 'hough', 1, 100, nothing)
-cv2.createTrackbar('p2', 'hough', 1, 100, nothing)
-cv2.createTrackbar('minR', 'hough', 0, 20, nothing)
-cv2.createTrackbar('maxR', 'hough', 1, 100, nothing)
+cv2.namedWindow('hough', cv2.CV_WINDOW_AUTOSIZE)
+cv2.createTrackbar('minD', 'hough', 80, 100, nothing)
+cv2.createTrackbar('p1', 'hough', 10, 100, nothing)
+cv2.createTrackbar('p2', 'hough', 10, 100, nothing)
+cv2.createTrackbar('minR', 'hough', 1, 20, nothing)
+cv2.createTrackbar('maxR', 'hough', 10, 100, nothing)
 
 
 ## TUNING PARAMETERS ##
@@ -35,8 +35,8 @@ hough_params = dict( #dp = 1, #inverse ratio of accumulator : img resolution (1 
                      maxRadius = maxR #max circle radius
                      )
 
-canny_params = dict( threshold1 = 200,
-                     threshold2 = 250,
+canny_params = dict( threshold1 = 10,
+                     threshold2 = 200,
                      apertureSize = 3,
                      L2gradient = True )
 
@@ -45,52 +45,50 @@ if __name__ == '__main__':
 
     try:
         # get image specified in command line argument
-        img = cv2.imread(sys.argv[1], cv2.IMREAD_GRAYSCALE)
+        fname = sys.argv[1]
+        img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
     except:
-        # get hard coded image if not specified...should be in same directory as executed code)
-        img = cv2.imread('02463d1926.tiff', cv2.IMREAD_GRAYSCALE)
+        # get hard coded image if not specified...should be in same directory as executed code
+        fname = 'images/05462d99.tiff'
+        img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
 
     # smoothing - TODO: try other filters like Canny Edge etc.
-    bimg = cv2.medianBlur(img, 5)
-    bimg = cv2.Laplacian(bimg,cv2.CV_8U)
-    # bimg = cv2.Canny(img, **canny_params)
-    cv2.imshow('filtered', bimg)
+    bimg = cv2.GaussianBlur(img, (3, 3), 0)
+    bimg = cv2.Canny(bimg, **canny_params)
+    # cv2.imshow('filtered', bimg)
 
     # make a duplicate color image
     cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
-    # compute hough circles
-    circles = cv2.HoughCircles(img, cv.CV_HOUGH_GRADIENT, dp, minD, **hough_params)
-
-    for i in circles[0,:]:
-        # draw circles on color image
-        cv2.circle(cimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
-        
     ## TODO: testing parameters on fly ##
     while (1):
-        # cv2.imshow('hough', cimg)
-        cv2.waitKey(0)
+
+        # get circles
+        circles = cv2.HoughCircles(img, cv.CV_HOUGH_GRADIENT, dp, minD, param1=p1, param2=p2, minRadius=minR, maxRadius=maxR)
+        if circles is not None:
+            for i in circles[0,:]:
+                cv2.circle(cimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
+        else:
+            print 'No circles found!'
+        # display
+        cv2.imshow('hough', cimg)
+        cv2.waitKey(100)
+
         minD = cv2.getTrackbarPos('minD', 'hough')
         p1 = cv2.getTrackbarPos('p1', 'hough')
         p2 = cv2.getTrackbarPos('p2', 'hough')
         minR = cv2.getTrackbarPos('minR', 'hough')
         maxR = cv2.getTrackbarPos('maxR', 'hough')
+
+        # reset image
         cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-        circles = cv2.HoughCircles(img, cv.CV_HOUGH_GRADIENT, dp, minD, param1=p1, param2=p2, minRadius=minR, maxRadius=maxR) #, **hough_params)
-        
-        if not circles:
-            pass
-        else:
-            for i in circles[0,:]:
-                cv2.circle(cimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
-        
+
+        # print 'vals: ' + str(minD) + ', ' + str(p1) + ', ' + str(p2) + ', ' + str(minR) + ', ' + str(maxR)
+
         k = cv2.waitKey(30) & 0xff
         if k == 27: #escape key
             break
         elif k == ord('s'):
-            cv2.imwrite('hough_img.png',cimg)
-        
-    ## DISPLAY IMAGES ##
-    # cv2.imshow('original', img)
+            cv2.imwrite('./output/'+fname,cimg)
 
     cv2.destroyAllWindows()
