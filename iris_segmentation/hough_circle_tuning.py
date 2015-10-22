@@ -146,6 +146,6 @@ if __name__ == '__main__':
             print tail
             savePath = os.path.join('output', tail)
             cv2.imwrite(savePath, cimgA)
-            print "saved image to "+ savePath+'\'' 
+            print "saved image to '"+ savePath+'\'' 
 
     cv2.destroyAllWindows()
