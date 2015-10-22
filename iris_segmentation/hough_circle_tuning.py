@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
         # print 'vals: ' + str(minD) + ', ' + str(p1) + ', ' + str(p2) + ', ' + str(minR) + ', ' + str(maxR)
 
-        k = cv2.waitKey(0)
+        k = cv2.waitKey(30) & 0xff
         if k == 27: # wait for 'ESC' to exit loop
             break
         elif k == ord('s'): # wait for 's' to save
