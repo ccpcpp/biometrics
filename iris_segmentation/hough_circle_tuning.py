@@ -6,19 +6,19 @@ import cv2.cv as cv
 
 ## DEFAULT PARAMETERS ##
 houghParamsA = dict(    dp = 1, # ratio of image res to accumulator res
-                        minDist = 500, #min dist btwn circle centers
-                        param1 = 51, #upper canny thresh
-                        param2 = 8, #lower canny thresh
-                        minRadius = 62, #min circle radius
-                        maxRadius = 195 #max circle radius
+                        minDist = 436, #500, #min dist btwn circle centers
+                        param1 = 59, #51, #upper canny thresh
+                        param2 = 50, #8, #lower canny thresh
+                        minRadius = 54, #62, #min circle radius
+                        maxRadius = 125 #195 #max circle radius
                         )
 
 houghParamsB = dict(    dp = 1, # ratio of image res to accumulator res
-                        minDist = 500, #min dist btwn circle centers
+                        minDist = 475, #500, #min dist btwn circle centers
                         param1 = 69, #upper canny thresh
-                        param2 = 8, #lower canny thresh
-                        minRadius = 62, #min circle radius
-                        maxRadius = 195 #max circle radius
+                        param2 = 32, #8, #lower canny thresh
+                        minRadius = 110, #62, #min circle radius
+                        maxRadius = 190 #195 #max circle radius
                         )
 
 cannyParams = dict(    threshold1 = 10, #first threshold for hysteresis
@@ -48,20 +48,19 @@ def houghCbB(x):
     houghParamsB['maxRadius'] = cv2.getTrackbarPos('maxR', 'houghB')
     return
 
-def cannyCb(x):
-    global cannyParams
-    cannyParams['threshold1'] = cv2.getTrackbarPos('t1', 'canny')
-    cannyParams['threshold2'] = cv2.getTrackbarPos('t2', 'canny')
-    cannyParams['apertureSize'] = cv2.getTrackbarPos('apSize', 'canny')
+# def cannyCb(x):
+#     global cannyParams
+#     cannyParams['threshold1'] = cv2.getTrackbarPos('t1', 'canny')
+#     cannyParams['threshold2'] = cv2.getTrackbarPos('t2', 'canny')
+#     cannyParams['apertureSize'] = cv2.getTrackbarPos('apSize', 'canny')
+
 
 ## PARAMETER GUI ##
-
 # for canny edge parameters
-cv2.namedWindow('canny', cv2.CV_WINDOW_AUTOSIZE)
-cv2.createTrackbar('t1', 'canny', cannyParams.get('threshold1'), 255, cannyCb)
-cv2.createTrackbar('t2', 'canny', cannyParams.get('threshold2'), 255, cannyCb)
-cv2.createTrackbar('apSize', 'canny', cannyParams.get('apertureSize'), 5, cannyCb)
-
+# cv2.namedWindow('canny', cv2.CV_WINDOW_AUTOSIZE)
+# cv2.createTrackbar('t1', 'canny', cannyParams.get('threshold1'), 255, cannyCb)
+# cv2.createTrackbar('t2', 'canny', cannyParams.get('threshold2'), 255, cannyCb)
+# cv2.createTrackbar('apSize', 'canny', cannyParams.get('apertureSize'), 5, cannyCb)
 
 # for hough circle parameters
 cv2.namedWindow('houghA', cv2.CV_WINDOW_AUTOSIZE)
@@ -98,8 +97,8 @@ if __name__ == '__main__':
     # cv2.imshow('Gaussian', blurred)
 
     # threshold
-    # ret, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_OTSU)
-    # cv2.imshow('thresh', thresh)
+    ret, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_OTSU)
+    cv2.imshow('thresh', thresh)
 
     # update output based on GUI parameters
     while (1):
