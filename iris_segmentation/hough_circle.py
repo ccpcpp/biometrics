@@ -5,6 +5,7 @@ import cv2
 import cv2.cv as cv
 import numpy as np
 
+## Usage
 
 ## DEFAULT PARAMETERS ##
 houghParamsA = dict(    dp = 2, # ratio of image res to accumulator res
@@ -46,20 +47,9 @@ if __name__ == '__main__':
 
         # smoothing
         blurred = cv2.GaussianBlur(img, (9, 9), 0)
-        # cv2.imshow('Gaussian', blurred)
-
-        # threshold
-        # ret, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_OTSU)
-        # cv2.imshow('thresh', thresh)
 
         # duplicate original image in color for displaying circles
         cimgA = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
-        # # filter image
-        # edge = cv2.Canny(blurred, **cannyParams)
-        # cv2.imshow('canny', edge)
-        # edge = cv2.Laplacian(blurred, cv2.CV_64F)
-        # cv2.imshow('laplacian', edge)
 
         # get big hough circles
         circles = cv2.HoughCircles(blurred, cv.CV_HOUGH_GRADIENT, **houghParamsB)
@@ -86,8 +76,6 @@ if __name__ == '__main__':
         else:
             print "No circles found!"
 
-
-
         # display images
         # cv2.imshow('hough', cimgA)
         # cv2.waitKey(0)
@@ -95,7 +83,7 @@ if __name__ == '__main__':
         # save image
         head, tail = os.path.split(img_path)
         savePath = os.path.join(saveDir, tail)
-        print "saving image to '"+ savePath+'\''
+        #print "saving image to '"+ savePath+'\''
         cv2.imwrite(savePath, cimgA)
 
         cv2.destroyAllWindows()
