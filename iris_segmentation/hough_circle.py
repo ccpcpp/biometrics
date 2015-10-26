@@ -19,7 +19,7 @@ houghParamsB = dict(    dp = 2, # ratio of image res to accumulator res
                         minDist = 500, #min dist btwn circle centers
                         param1 =  28,#40, #upper canny thresh
                         param2 = 24, #lower canny thresh
-                        minRadius = 100, #min circle radius
+                        minRadius = 103, #min circle radius
                         maxRadius = 142 #142 #196 #max circle radius
                         )
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             i = circles[0,0]
             cv2.circle(cimgA, (i[0], i[1]), i[2], (255, 0, 0), 2)
             ### updated max radius of small cirlce ####
-            houghParamsA['maxRadius'] = int(i[2]-10)
+            houghParamsA['maxRadius'] = int(i[2]*0.7)
             ### MASK #####
             mask = np.zeros(blurred.shape, dtype=np.uint8)
             cv2.circle(mask, (i[0], i[1]), i[2], (255,255,255), -1,8,0)
