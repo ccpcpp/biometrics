@@ -7,20 +7,20 @@ import numpy as np
 
 
 ## DEFAULT PARAMETERS ##
-houghParamsA = dict(    dp = 1, # ratio of image res to accumulator res
+houghParamsA = dict(    dp = 2, # ratio of image res to accumulator res
                         minDist = 500, #min dist btwn circle centers
-                        param1 = 51, #upper canny thresh
-                        param2 = 8, #lower canny thresh
-                        minRadius = 62, #min circle radius
-                        maxRadius = 195 #max circle radius
+                        param1 =  10, #28,#18, #22 28, #upper canny thresh
+                        param2 = 22, #lower canny thresh
+                        minRadius = 20, #34 #min circle radius
+                        maxRadius =  123#95 #121 #max circle radius
                         )
 
-houghParamsB = dict(    dp = 1, # ratio of image res to accumulator res
+houghParamsB = dict(    dp = 2, # ratio of image res to accumulator res
                         minDist = 500, #min dist btwn circle centers
-                        param1 = 69, #upper canny thresh
-                        param2 = 8, #lower canny thresh
-                        minRadius = 62, #min circle radius
-                        maxRadius = 195 #max circle radius
+                        param1 =  28,#40, #upper canny thresh
+                        param2 = 24, #lower canny thresh
+                        minRadius = 100, #min circle radius
+                        maxRadius = 142 #142 #196 #max circle radius
                         )
 
 if __name__ == '__main__':
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
         # smoothing
-        blurred = cv2.GaussianBlur(img, (5, 5), 0)
+        blurred = cv2.GaussianBlur(img, (9, 9), 0)
         # cv2.imshow('Gaussian', blurred)
 
         # threshold
@@ -61,21 +61,32 @@ if __name__ == '__main__':
         # edge = cv2.Laplacian(blurred, cv2.CV_64F)
         # cv2.imshow('laplacian', edge)
 
-        # get small hough circles
-        circles = cv2.HoughCircles(blurred, cv.CV_HOUGH_GRADIENT, **houghParamsA)
-        if circles is not None:
-            for i in circles[0,:]:
-                cv2.circle(cimgA, (i[0], i[1]), i[2], (0, 255, 0), 2)
-        else:
-            print "No circles found!"
-
         # get big hough circles
         circles = cv2.HoughCircles(blurred, cv.CV_HOUGH_GRADIENT, **houghParamsB)
         if circles is not None:
-            for i in circles[0,:]:
-                cv2.circle(cimgA, (i[0], i[1]), i[2], (255, 0, 0), 2)
+            #for i in circles[0,:]:
+            i = circles[0,0]
+            cv2.circle(cimgA, (i[0], i[1]), i[2], (255, 0, 0), 2)
+            ### updated max radius of small cirlce ####
+            houghParamsA['maxRadius'] = int(i[2]-10)
+            ### MASK #####
+            mask = np.zeros(blurred.shape, dtype=np.uint8)
+            cv2.circle(mask, (i[0], i[1]), i[2], (255,255,255), -1,8,0)
+            
+            blurred = blurred&mask
         else:
             print "No circles found!"
+
+        # get small hough circles
+        circles = cv2.HoughCircles(blurred, cv.CV_HOUGH_GRADIENT, **houghParamsA)
+        if circles is not None:
+            #for i in circles[0,:]:
+            i = circles[0,0]
+            cv2.circle(cimgA, (i[0], i[1]), i[2], (0, 255, 0), 2)
+        else:
+            print "No circles found!"
+
+
 
         # display images
         # cv2.imshow('hough', cimgA)
